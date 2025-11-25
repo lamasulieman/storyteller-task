@@ -1,0 +1,14 @@
+{
+  "event_weights": {
+    "goal": 5,
+    "penalty_missed": 4,
+    "shot_on_target": 3,
+    "card_red": 3,
+    "card_yellow": 1,
+    "chance": 2,
+    "substitution": 0
+  },
+  "late_minute_bonus_after": 75,
+  "late_minute_bonus": 1,
+  "max_pages": 7
+}

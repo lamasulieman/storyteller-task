@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Story Pack Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 0; }
+    header { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
+    #title { font-weight: 600; }
+    main { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+    .card { max-width: 720px; width: 100%; border: 1px solid #eee; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+    .page { display: none; }
+    .page.active { display: block; }
+    img { max-width: 100%; border-radius: 8px; }
+    .meta { color: #666; font-size: 14px; margin-top: 8px; }
+    .nav { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    button { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: default; }
+    .dots { display: flex; gap: 6px; align-items: center; }
+    .dot { width: 8px; height: 8px; border-radius: 4px; background: #ddd; }
+    .dot.active { background: #333; }
+    #loader { font-size: 14px; color: #444; }
+    .headline { font-size: 20px; font-weight: 600; margin: 8px 0; }
+    .caption { font-size: 16px; margin: 6px 0; }
+    footer { text-align: center; font-size: 12px; color: #777; padding: 12px; }
+    #packMeta { font-size: 12px; color: #777; }
+  </style>
+</head>
+<body>
+  <header>
+    <input type="file" id="fileInput" accept="application/json"/>
+    <div id="title">Load a pack.json to preview</div>
+    <div id="packMeta"></div>
+  </header>
+  <main>
+    <div class="card">
+      <div id="pages"></div>
+      <div class="nav">
+        <button id="prevBtn" disabled>&larr; Prev</button>
+        <div class="dots" id="dots"></div>
+        <button id="nextBtn" disabled>Next &rarr;</button>
+      </div>
+      <div class="meta">Tip: Use left/right arrow keys.</div>
+    </div>
+  </main>
+  <footer>Story Pack Preview</footer>
+
+  <script>
+    let pack = null;
+    let idx = 0;
+    const fileInput = document.getElementById('fileInput');
+    const pagesEl = document.getElementById('pages');
+    const dotsEl = document.getElementById('dots');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const titleEl = document.getElementById('title');
+    const packMetaEl = document.getElementById('packMeta');
+
+    function render() {
+      if (!pack) return;
+      pagesEl.innerHTML = '';
+      dotsEl.innerHTML = '';
+      pack.pages.forEach((page, i) => {
+        const s = document.createElement('div');
+        s.className = 'page' + (i === idx ? ' active' : '');
+        const h = document.createElement('div');
+        h.className = 'headline';
+        if (page.type === 'cover') {
+          h.textContent = page.headline || 'Cover';
+          s.appendChild(h);
+          if (page.image) {
+            const img = document.createElement('img'); img.src = page.image; s.appendChild(img);
+          }
+        } else if (page.type === 'highlight') {
+          h.textContent = (page.minute != null ? `[${page.minute}’] ` : '') + (page.headline || 'Highlight');
+          s.appendChild(h);
+          if (page.image) {
+            const img = document.createElement('img'); img.src = page.image; s.appendChild(img);
+          }
+          const c = document.createElement('div'); c.className = 'caption'; c.textContent = page.caption || ''; s.appendChild(c);
+          if (page.explanation) {
+            const e = document.createElement('div'); e.className = 'meta'; e.textContent = 'Why this ranked: ' + page.explanation; s.appendChild(e);
+          }
+        } else {
+          h.textContent = page.headline || 'Info';
+          s.appendChild(h);
+          const body = document.createElement('div'); body.className = 'caption'; body.textContent = page.body || ''; s.appendChild(body);
+        }
+        pagesEl.appendChild(s);
+
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === idx ? ' active' : '');
+        dot.addEventListener('click', () => { idx = i; updateNav(); });
+        dotsEl.appendChild(dot);
+      });
+      updateNav();
+    }
+
+    function updateNav() {
+      const n = pack ? pack.pages.length : 0;
+      prevBtn.disabled = idx <= 0;
+      nextBtn.disabled = idx >= n - 1;
+      Array.from(document.querySelectorAll('.page')).forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+      Array.from(document.querySelectorAll('.dot')).forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+    }
+
+    prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; updateNav(); }});
+    nextBtn.addEventListener('click', () => { if (pack && idx < pack.pages.length - 1) { idx++; updateNav(); }});
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevBtn.click();
+      if (e.key === 'ArrowRight') nextBtn.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          pack = JSON.parse(evt.target.result);
+          idx = 0;
+          titleEl.textContent = pack.title || 'Story Pack';
+          packMetaEl.textContent = `${pack.pack_id || ''}`;
+          render();
+        } catch (err) {
+          alert('Invalid JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
