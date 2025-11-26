@@ -81,7 +81,7 @@ def _make_cover_page(match_info: Dict[str, Any],
     }
 
 def _make_highlight_page(event: Dict[str, Any],
-                         score: int,
+                         score_breakdown: Dict[str, Any],
                          asset: str,
                          players: List[str]) -> Dict[str, Any]:
     # minute should be an integer
@@ -107,6 +107,18 @@ def _make_highlight_page(event: Dict[str, Any],
 
     caption = event.get("comment", "").strip()
 
+    # Build explanation from breakdown
+    base = score_breakdown.get("base", 0)
+    context_bonus = score_breakdown.get("context_bonus", 0)
+    bonus_reasons = score_breakdown.get("bonus_reasons", [])
+    total = score_breakdown.get("score", 0)
+    
+    explanation_parts = [f"base score={base}"]
+    if bonus_reasons:
+        explanation_parts.extend(bonus_reasons)
+    # explanation_parts.append(f"total={total}")
+    explanation = " + ".join(explanation_parts)
+
     return {
         "id": str(uuid.uuid4()),
         "type": "highlight",
@@ -115,8 +127,8 @@ def _make_highlight_page(event: Dict[str, Any],
         "headline": headline,
         "caption": caption,
         "image": asset,
-        # extra fields for debugging / explanation:
-        "explanation": f"heuristic_score={score}",
+        # extra fields for  explanation:
+        "explanation": explanation,
         "players": players,
         "event_type": event.get("type"),
         "created_at": _utc_now_iso(),
@@ -130,6 +142,25 @@ def _make_no_highlights_page() -> Dict[str, Any]:
         "type": "info",
         "headline": "No highlights available",
         "body": "No events reached the highlight threshold for this match.",
+        "image": "../assets/placeholder.png",
+        "created_at": _utc_now_iso(),
+    }
+
+
+def _make_closing_page(final_home: int, final_away: int) -> Dict[str, Any]:
+    """
+    Create a closing slide announcing the final result.
+    Only added when there are actual highlights in the story.
+    Uses 'highlight' type so the image displays, positioned at minute 120 (end of match).
+    """
+    final_score_str = f"{final_home}-{final_away}"
+    return {
+        "id": str(uuid.uuid4()),
+        "type": "highlight",
+        "minute": 120,
+        "headline": f"Final Score: {final_score_str}",
+        "caption": "Match ended",
+        "image": "../assets/final.png",
         "created_at": _utc_now_iso(),
     }
 
@@ -167,13 +198,13 @@ def build_story_from_files(
     asset_db = load_asset_descriptions()
 
     # 1. Compute scores and track running scoreline
-    scored_events: List[Tuple[int, int, Dict[str, Any]]] = []
+    scored_events: List[Tuple[int, Dict[str, Any], Dict[str, Any]]] = []
     score_home = 0
     score_away = 0
 
     for idx, ev in enumerate(events):
         final_score = compute_final_score(ev, score_home, score_away, home_team_id, away_team_id)
-        if final_score > 0:
+        if final_score["score"] > 0:
             scored_events.append((idx, final_score, ev))
 
         # Update internal score state for future context
@@ -188,7 +219,7 @@ def build_story_from_files(
     final_home, final_away = score_home, score_away
 
     # 2. Choose top N by score, tie breaking by original index for stability
-    scored_events.sort(key=lambda t: (-t[1], t[0]))
+    scored_events.sort(key=lambda t: (-t[1]["score"], t[0]))
     selected = scored_events[:top_n]
 
     # Reorder selected by original index to keep story chronological
@@ -203,7 +234,7 @@ def build_story_from_files(
     if not selected:
         pages.append(_make_no_highlights_page())
     else:
-        for idx, event_score, ev in selected:
+        for idx, score_breakdown, ev in selected:
             # Resolve involved players
             players: List[str] = []
             p1_id = ev.get("playerRef1")
@@ -222,8 +253,11 @@ def build_story_from_files(
             # Pick best visual asset
             asset_path = pick_asset_for_event(ev, players, asset_db)
 
-            page = _make_highlight_page(ev, event_score, asset_path, players)
+            page = _make_highlight_page(ev, score_breakdown, asset_path, players)
             pages.append(page)
+
+        # Add closing slide with final result when there are highlights
+        pages.append(_make_closing_page(final_home, final_away))
 
     # 3. Build story object
     home_name = match_info["contestant"][0]["name"]
@@ -236,7 +270,7 @@ def build_story_from_files(
                  if p.get("event_type") in ("goal", "penalty goal")]
 
     story = {
-        "story_id": str(uuid.uuid4()),
+        "pack_id": str(uuid.uuid4()),
         "title": title,
         "pages": pages,
         "metrics": {

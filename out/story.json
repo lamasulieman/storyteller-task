@@ -1,107 +1,44 @@
 {
-  "story_id": "9011bea8-b960-4f31-a17a-48ce7a1085f9",
+  "pack_id": "831ebecd-13a6-47f3-8991-647ce3304eff",
   "title": "Celtic vs Kilmarnock",
   "pages": [
     {
-      "id": "6c719e95-58b5-4dea-b888-032ff5fbd1fa",
+      "id": "bafc8041-1c84-4e89-baa7-e4ea1fa386de",
       "type": "cover",
       "headline": "Celtic vs Kilmarnock - 2025-11-09",
       "image": "../assets/cover.jpg",
       "caption": "Final score 4-0",
-      "created_at": "2025-11-25T15:21:13.423056Z"
+      "created_at": "2025-11-26T20:30:05.542243Z"
     },
     {
-      "id": "0c61aa97-b664-4e59-8b2b-c47fb7cbe2ee",
+      "id": "15cf47d6-94a7-4966-8d4b-2000b4787bb8",
       "type": "highlight",
       "minute": 9,
       "headline": "GOAL \u2014 Johnny Kenny, Reo Hatate",
       "caption": "Goal! Celtic 1, Kilmarnock 0. Johnny Kenny (Celtic) left footed shot from very close range to the bottom left corner. Assisted by Reo Hatate.",
       "image": "../assets/21522057.jpg",
-      "explanation": "heuristic_score=155",
+      "explanation": "base score=100 + first_goal=25 + go_ahead=30",
       "players": [
         "Johnny Kenny",
         "Reo Hatate"
       ],
       "event_type": "goal",
-      "created_at": "2025-11-25T15:21:13.423767Z"
+      "created_at": "2025-11-26T20:30:05.542990Z"
     },
     {
-      "id": "27c272a4-570d-40a2-ac66-a4ddb960726f",
+      "id": "07755ac5-a6e0-4f94-b176-a3067452fb8a",
       "type": "highlight",
-      "minute": 50,
-      "headline": "GOAL \u2014 Kieran Tierney, Liam Scales",
-      "caption": "Goal! Celtic 2, Kilmarnock 0. Kieran Tierney (Celtic) left footed shot from outside the box to the bottom right corner. Assisted by Liam Scales.",
-      "image": "../assets/21522328.jpg",
-      "explanation": "heuristic_score=115",
-      "players": [
-        "Kieran Tierney",
-        "Liam Scales"
-      ],
-      "event_type": "goal",
-      "created_at": "2025-11-25T15:21:13.423862Z"
-    },
-    {
-      "id": "1ca11640-e7f0-4c3b-8930-57ee17219b8e",
-      "type": "highlight",
-      "minute": 84,
-      "headline": "GOAL \u2014 Daizen Maeda, Arne Engels",
-      "caption": "Goal! Celtic 3, Kilmarnock 0. Daizen Maeda (Celtic) right footed shot from the right side of the box to the bottom right corner. Assisted by Arne Engels with a through ball.",
-      "image": "../assets/21522413.jpg",
-      "explanation": "heuristic_score=120",
-      "players": [
-        "Daizen Maeda",
-        "Arne Engels"
-      ],
-      "event_type": "goal",
-      "created_at": "2025-11-25T15:21:13.423945Z"
-    },
-    {
-      "id": "3f108c11-7324-474d-a0d0-9cca2e4e4517",
-      "type": "highlight",
-      "minute": 91,
-      "headline": "Penalty Won \u2014 Hyun-Jun Yang",
-      "caption": "Penalty Celtic. Yang Hyun-Jun draws a foul in the penalty area.",
-      "image": "../assets/placeholder.png",
-      "explanation": "heuristic_score=90",
-      "players": [
-        "Hyun-Jun Yang"
-      ],
-      "event_type": "penalty won",
-      "created_at": "2025-11-25T15:21:13.424005Z"
-    },
-    {
-      "id": "e5f324b1-f7a6-44fa-94ed-3e5313b2346d",
-      "type": "highlight",
-      "minute": 91,
-      "headline": "Penalty Lost \u2014 James Brown",
-      "caption": "Penalty conceded by James Brown (Kilmarnock) after a foul in the penalty area.",
-      "image": "../assets/placeholder.png",
-      "explanation": "heuristic_score=80",
-      "players": [
-        "James Brown"
-      ],
-      "event_type": "penalty lost",
-      "created_at": "2025-11-25T15:21:13.424058Z"
-    },
-    {
-      "id": "6520d59e-4bd6-4676-9400-d62609bfbcb9",
-      "type": "highlight",
-      "minute": 92,
-      "headline": "GOAL \u2014 Arne Engels",
-      "caption": "Goal! Celtic 4, Kilmarnock 0. Arne Engels (Celtic) converts the penalty with a right footed shot to the bottom left corner.",
-      "image": "../assets/21522436.jpg",
-      "explanation": "heuristic_score=130",
-      "players": [
-        "Arne Engels"
-      ],
-      "event_type": "penalty goal",
-      "created_at": "2025-11-25T15:21:13.424136Z"
+      "minute": 120,
+      "headline": "Final Score: 4-0",
+      "caption": "Match ended",
+      "image": "../assets/final.png",
+      "created_at": "2025-11-26T20:30:05.543043Z"
     }
   ],
   "metrics": {
-    "goals": 4,
-    "highlights": 6
+    "goals": 1,
+    "highlights": 2
   },
   "source": "../data/match_events.json",
-  "created_at": "2025-11-25T15:21:13.424170Z"
+  "created_at": "2025-11-26T20:30:05.543079Z"
 }
